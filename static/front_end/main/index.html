@@ -6,11 +6,11 @@
     <link rel="stylesheet" href="index.css">
     <link rel="icon" type="image/png" href="/Images/favicon.png">
   </head>
-  <body>
+  <body onload="OnLoadPage()">
     <div>
-      <div class = "top_page">
+      <div id="top_page" class = "top_page">
         <h1>Welcome to the main page</h1>
-        <button onclick="RedirectToLogIN()">Log in</button>
+        <button id="logInBtn" onclick="RedirectToLogIN()">Log in</button>
       </div>
       <div class = "content">
         <p>Very nice</p>

@@ -30,6 +30,12 @@ struct LogIn {
     psw: String,
 }
 
+#[get("/logout")]
+async fn log_out(cookies: &CookieJar<'_>) -> &'static str {
+    cookies.remove("usr");
+    "its done"
+}
+
 #[post("/login", format = "json", data = "<login>")]
 async fn log_in(
     login: Json<LogIn>,
@@ -103,6 +109,6 @@ pub fn stage() -> AdHoc {
     AdHoc::on_ignite("Database staged", |rocket| async {
         rocket
             .attach(Db::init())
-            .mount("/", routes![sign_up, log_in])
+            .mount("/", routes![sign_up, log_in, log_out])
     })
 }
