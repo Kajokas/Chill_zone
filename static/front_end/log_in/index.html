@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <title>ChillZone Log In</title>
     <link rel="icon" type="image/png" href="/Images/favicon.png">
-    <link rel="stylesheet" href="/login/log_in.css">
+    <link rel="stylesheet" href="/loginPage/log_in.css">
   </head>
   <body>
     <div>
@@ -12,12 +12,12 @@
         <h1>Log in</h1>
       </div>
       <div class="content">
-        <input placeholder="username/email"/>
-        <input type="password" placeholder="password"/>
-        <a href="/signup">Don't have an account?</a>
-        <button onclick="RedirectToSignUp()">Log In</button>
+        <input id="login" placeholder="username/email"/>
+        <input id="psw" type="password" placeholder="password"/>
+        <a href="/signupPage">Don't have an account?</a>
+        <button onclick="SignUp()">Log In</button>
       </div>
     </div>
-    <script src="/login/log_in.js"></script>
+    <script src="/loginPage/log_in.js"></script>
   </body>
 </html>

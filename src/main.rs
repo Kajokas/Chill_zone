@@ -9,7 +9,10 @@ pub mod user_manager;
 fn rocket() -> _ {
     rocket::build()
         .mount("/", FileServer::from("./static/front_end/main").rank(0))
-        .mount("/login", FileServer::from("./static/front_end/log_in"))
-        .mount("/signup", FileServer::from("./static/front_end/sign_up"))
+        .mount("/loginPage", FileServer::from("./static/front_end/log_in"))
+        .mount(
+            "/signupPage",
+            FileServer::from("./static/front_end/sign_up"),
+        )
         .attach(user_manager::stage())
 }

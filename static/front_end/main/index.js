@@ -13,5 +13,5 @@ const TestFunk = () =>{
 };
 
 const RedirectToLogIN = () =>{
-    window.location.href = '/login';
+    window.location.href = '/loginPage';
 };

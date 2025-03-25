@@ -1,3 +1,5 @@
+use std::i64;
+
 use rocket::fairing::AdHoc;
 use rocket::futures::TryStreamExt;
 use rocket::http::CookieJar;
@@ -20,6 +22,50 @@ struct User {
     username: String,
     email: String,
     psw: String,
+}
+
+#[derive(Deserialize)]
+struct LogIn {
+    login: String,
+    psw: String,
+}
+
+#[post("/login", format = "json", data = "<login>")]
+async fn log_in(
+    login: Json<LogIn>,
+    mut db: Connection<Db>,
+    cookies: &CookieJar<'_>,
+) -> Result<Json<User>> {
+    let results = sqlx::query!(
+        r#"SELECT id FROM USER WHERE (username = $1 OR email = $1) AND psw = $2"#,
+        login.login,
+        login.psw
+    )
+    .fetch(&mut **db)
+    .try_collect::<Vec<_>>()
+    .await?;
+
+    let temp_id = Some(results.first().expect("No such user").id);
+
+    if temp_id.is_some() {
+        let id = temp_id.map(|i| i.to_string()).unwrap();
+
+        println!("{}", id);
+
+        if cookies.get("usr").is_none() {
+            cookies.add(("usr", id));
+        } else {
+            cookies.remove("usr");
+            cookies.add(("usr", id));
+        }
+    }
+
+    Ok(Json(User {
+        id: temp_id,
+        username: String::from("NO"),
+        email: String::from("NO"),
+        psw: String::from("NO"),
+    }))
 }
 
 #[post("/signup", format = "json", data = "<user>")]
@@ -55,6 +101,8 @@ async fn sign_up(
 
 pub fn stage() -> AdHoc {
     AdHoc::on_ignite("Database staged", |rocket| async {
-        rocket.attach(Db::init()).mount("/", routes![sign_up])
+        rocket
+            .attach(Db::init())
+            .mount("/", routes![sign_up, log_in])
     })
 }
