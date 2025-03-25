@@ -1,0 +1,22 @@
+body {
+    display: flex;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+.top_page{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+.top_page button {
+    position: absolute;
+    right: 20px;
+    color: white;
+    background-color: darkblue;
+}
+.content {
+    text-align: center;
+}

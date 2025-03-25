@@ -1,0 +1,14 @@
+[package]
+name = "chill_zone_rocket"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+rocket = { version = "0.5.1", features = ["json"] }
+serde = { version = "1.0", features = ["derive"] }
+sqlx = "0.7"
+dotenv = "0.15"
+
+[dependencies.rocket_db_pools]
+version = "0.2.0"
+features = ["sqlx_sqlite"]
