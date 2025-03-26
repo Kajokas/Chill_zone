@@ -17,10 +17,17 @@ const OnLoadPage = () => {
         topPageElement.removeChild(log_in_btn);
 
         let log_out_btn = document.createElement("button");
+        log_out_btn.id = "logOutBtn";
         log_out_btn.textContent = "Log out";
         log_out_btn.onclick = LogOut;
 
+        let uploadPopUpBtn = document.createElement("button");
+        uploadPopUpBtn.id = "UploadBtn";
+        uploadPopUpBtn.textContent = "Upload";
+        uploadPopUpBtn.onclick = () => {window.location.href = "/uploadPage"};
+
         topPageElement.appendChild(log_out_btn);
+        topPageElement.appendChild(uploadPopUpBtn);
     }
 };
 
@@ -39,3 +46,7 @@ const LogOut = () => {
        window.location.href = '/';
     })
 };
+
+const OpenUploadPopUp = () => {
+    console.log("Works");
+}

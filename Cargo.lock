@@ -201,6 +201,7 @@ dependencies = [
  "rocket_db_pools",
  "serde",
  "sqlx",
+ "tokio",
 ]
 
 [[package]]
@@ -2206,6 +2207,7 @@ dependencies = [
  "bytes",
  "libc",
  "mio",
+ "parking_lot",
  "pin-project-lite",
  "signal-hook-registry",
  "socket2",

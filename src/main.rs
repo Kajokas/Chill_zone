@@ -3,6 +3,7 @@ use rocket::fs::FileServer;
 #[macro_use]
 extern crate rocket;
 
+pub mod music_manager;
 pub mod user_manager;
 
 #[launch]
@@ -14,5 +15,7 @@ fn rocket() -> _ {
             "/signupPage",
             FileServer::from("./static/front_end/sign_up"),
         )
+        .mount("/uploadPage", FileServer::from("./static/front_end/upload"))
         .attach(user_manager::stage())
+        .attach(music_manager::stage())
 }

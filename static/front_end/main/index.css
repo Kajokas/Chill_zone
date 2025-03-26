@@ -11,12 +11,28 @@ body {
     align-items: center;
     width: 100%;
 }
-.top_page button {
+
+#logInBtn {
     position: absolute;
     right: 20px;
     color: white;
     background-color: darkblue;
 }
+
+#logOutBtn {
+    position: absolute;
+    right: 20px;
+    color: black;
+    background-color: red;
+}
+
+#UploadBtn {
+    position: absolute;
+    left: 20px;
+    color: black;
+    background: gray;
+}
+
 .content {
     text-align: center;
 }

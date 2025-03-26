@@ -8,7 +8,6 @@ const SignUp = () => {
     } else {
         console.log(name + " " + mail + " " + psw);
         var User = {
-            id: 1,
             username: name,
             email: mail,
             psw: psw
