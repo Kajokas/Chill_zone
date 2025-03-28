@@ -16,7 +16,6 @@ struct Db(sqlx::SqlitePool);
 type Result<T, E = rocket::response::Debug<sqlx::Error>> = std::result::Result<T, E>;
 
 #[derive(Deserialize, Debug, Serialize)]
-#[serde(crate = "rocket::serde")]
 struct User {
     id: Option<i64>,
     username: String,

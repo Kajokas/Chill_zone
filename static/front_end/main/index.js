@@ -29,6 +29,8 @@ const OnLoadPage = () => {
         topPageElement.appendChild(log_out_btn);
         topPageElement.appendChild(uploadPopUpBtn);
     }
+
+    LoadMainSongs();
 };
 
 const LogOut = () => {
@@ -49,4 +51,56 @@ const LogOut = () => {
 
 const OpenUploadPopUp = () => {
     console.log("Works");
-}
+};
+
+
+const LoadMainSongs = () => {
+    fetch("/loadMainPageSongs", {
+        method: "GET",
+    })
+    .then((response) => {
+        if (!response.ok){
+            alert("Something went wrong!");
+        }
+        return response.json().then(data => {
+            var songs = data;
+
+            songs.forEach((song, index) => {
+                console.log(`${index}: ${song.artist}`);
+                AddASongDiv(song.id, song.title, song.author, song.thumbnail);
+            });
+        }).catch(err => {
+            console.error("Recieved error: ", err);
+        });
+    })
+};
+
+function AddASongDiv(id, title, author, thumb){
+    let container = document.getElementById("contents");
+
+    let songDiv = document.createElement("div");
+    songDiv.classList.add("songDiv");
+    songDiv.onclick = () => {
+        console.log("ID: ", id);
+    };
+
+    let songCover = document.createElement("img");
+    songCover.src = "songsDir/" + thumb;
+    songCover.width = 500;
+    songCover.height = 300;
+
+    let titleText = document.createElement("p");
+    titleText.id = "titleText";
+    titleText.innerText = title;
+
+    let artistName = document.createElement("p");
+    artistName.id = "artist";
+    artistName.innerText = author;
+
+
+    songDiv.appendChild(songCover);
+    songDiv.appendChild(titleText);
+    songDiv.appendChild(artistName);
+
+    container.appendChild(songDiv);
+};

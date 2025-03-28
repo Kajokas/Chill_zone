@@ -6,11 +6,12 @@ use rocket::form::Form;
 use rocket::fs::{relative, TempFile};
 use rocket::futures::TryStreamExt;
 use rocket::http::CookieJar;
-use rocket::outcome::IntoOutcome;
+use rocket::post;
+use rocket::serde::json::Json;
 use rocket::tokio;
-use rocket::{post, tokio::fs::File, tokio::io::AsyncWriteExt};
 use rocket_db_pools::sqlx;
 use rocket_db_pools::{Connection, Database};
+use serde::Serialize;
 
 use crate::rocket;
 
@@ -28,6 +29,44 @@ struct Music<'r> {
     MusicFile: String,
     coverFile: TempFile<'r>,
     musicFile: TempFile<'r>,
+}
+
+#[derive(Serialize)]
+struct RetMusicData {
+    id: i64,
+    title: String,
+    artist: String,
+    thumbnail: String,
+}
+
+#[get("/loadMainPageSongs")]
+async fn load_main_songs(mut db: Connection<Db>) -> Result<Json<Vec<RetMusicData>>> {
+    let results = sqlx::query!("SELECT s.id as id, s.title as title, u.username as artist, s.CoverArtFile as thumbnail FROM user u, songs s where s.artist = u.id")
+    .fetch(&mut **db)
+    .try_collect::<Vec<_>>()
+    .await?;
+
+    let good_results = Some(results).expect("No songs found");
+
+    let mut song_vec = Vec::new();
+
+    for r in good_results {
+        let id = r.id;
+        let title = r.title;
+        let artist = r.artist;
+        let thumb = r.thumbnail;
+
+        let song_data = RetMusicData {
+            id,
+            title,
+            artist,
+            thumbnail: thumb,
+        };
+
+        song_vec.push(song_data);
+    }
+
+    Ok(Json(song_vec))
 }
 
 #[post("/upload", data = "<song>")]
@@ -76,6 +115,8 @@ async fn upload_song<'r>(
 
 pub fn stage() -> AdHoc {
     AdHoc::on_ignite("Database staged", |rocket| async {
-        rocket.attach(Db::init()).mount("/", routes![upload_song])
+        rocket
+            .attach(Db::init())
+            .mount("/", routes![upload_song, load_main_songs])
     })
 }

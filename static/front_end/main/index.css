@@ -12,6 +12,14 @@ body {
     width: 100%;
 }
 
+.songDiv{
+    background-color: white;
+}
+
+.songDiv:hover{
+    background-color: darkgray;
+}
+
 #logInBtn {
     position: absolute;
     right: 20px;
