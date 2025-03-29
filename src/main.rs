@@ -17,6 +17,8 @@ fn rocket() -> _ {
         )
         .mount("/uploadPage", FileServer::from("./static/front_end/upload"))
         .mount("/songsDir", FileServer::from("./music"))
+        .mount("/listen", FileServer::from("./static/front_end/listen"))
+        .mount("/img", FileServer::from("./static/Images"))
         .attach(user_manager::stage())
         .attach(music_manager::stage())
 }

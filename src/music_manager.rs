@@ -3,7 +3,7 @@ use std::path::Path;
 
 use rocket::fairing::AdHoc;
 use rocket::form::Form;
-use rocket::fs::{relative, TempFile};
+use rocket::fs::{relative, NamedFile, TempFile};
 use rocket::futures::TryStreamExt;
 use rocket::http::CookieJar;
 use rocket::post;
@@ -37,6 +37,35 @@ struct RetMusicData {
     title: String,
     artist: String,
     thumbnail: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    song: Option<String>,
+}
+
+#[get("/listen?<l>")]
+async fn listen_to_song(l: i64) -> Option<NamedFile> {
+    println!("user is watching: {}", l);
+    NamedFile::open("./static/front_end/listen/index.html")
+        .await
+        .ok()
+}
+
+#[get("/song?<l>")]
+async fn load_song(mut db: Connection<Db>, l: i64) -> Result<Json<RetMusicData>> {
+    let results = sqlx::query!("SELECT s.id as id, s.title as title, u.username as artist, s.CoverArtFile as thumbnail, s.MusicFile as music FROM user u, songs s where s.artist = u.id and s.id = ?", l)
+    .fetch_one(&mut **db)
+    .await?;
+
+    let good_result = Some(results).expect("No such song");
+
+    let data = RetMusicData {
+        id: good_result.id,
+        title: good_result.title,
+        artist: good_result.artist,
+        thumbnail: good_result.thumbnail,
+        song: Some(good_result.music),
+    };
+
+    Ok(Json(data))
 }
 
 #[get("/loadMainPageSongs")]
@@ -61,6 +90,7 @@ async fn load_main_songs(mut db: Connection<Db>) -> Result<Json<Vec<RetMusicData
             title,
             artist,
             thumbnail: thumb,
+            song: None,
         };
 
         song_vec.push(song_data);
@@ -115,8 +145,9 @@ async fn upload_song<'r>(
 
 pub fn stage() -> AdHoc {
     AdHoc::on_ignite("Database staged", |rocket| async {
-        rocket
-            .attach(Db::init())
-            .mount("/", routes![upload_song, load_main_songs])
+        rocket.attach(Db::init()).mount(
+            "/",
+            routes![upload_song, load_main_songs, listen_to_song, load_song],
+        )
     })
 }

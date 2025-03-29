@@ -67,7 +67,7 @@ const LoadMainSongs = () => {
 
             songs.forEach((song, index) => {
                 console.log(`${index}: ${song.artist}`);
-                AddASongDiv(song.id, song.title, song.author, song.thumbnail);
+                AddASongDiv(song.id, song.title, song.artist, song.thumbnail);
             });
         }).catch(err => {
             console.error("Recieved error: ", err);
@@ -82,6 +82,7 @@ function AddASongDiv(id, title, author, thumb){
     songDiv.classList.add("songDiv");
     songDiv.onclick = () => {
         console.log("ID: ", id);
+        ListenToSong(id);
     };
 
     let songCover = document.createElement("img");
@@ -103,4 +104,8 @@ function AddASongDiv(id, title, author, thumb){
     songDiv.appendChild(artistName);
 
     container.appendChild(songDiv);
+};
+
+const ListenToSong = (songId) => {
+    window.location.href =`/listen?l=${songId}`;
 };

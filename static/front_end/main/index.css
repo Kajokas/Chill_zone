@@ -14,6 +14,7 @@ body {
 
 .songDiv{
     background-color: white;
+    text-align: left;
 }
 
 .songDiv:hover{
