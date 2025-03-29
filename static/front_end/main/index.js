@@ -1,34 +1,41 @@
+let currentUsr = "";
+
 const RedirectToLogIN = () =>{
     window.location.href = '/loginPage';
 };
 
+const CheckLogin = () => {
+    fetch("/getUser", {
+        method: "GET",
+        credentials: 'include',
+    })
+    .then((response) => {
+        if(!response.ok){
+            console.log("Failed to authenticate");
+        } else {
+            let topPageElement = document.getElementById("top_page");
+            let log_in_btn = document.getElementById("logInBtn");
+
+            topPageElement.removeChild(log_in_btn);
+
+            let log_out_btn = document.createElement("button");
+            log_out_btn.id = "logOutBtn";
+            log_out_btn.textContent = "Log out";
+            log_out_btn.onclick = LogOut;
+
+            let uploadPopUpBtn = document.createElement("button");
+            uploadPopUpBtn.id = "UploadBtn";
+            uploadPopUpBtn.textContent = "Upload";
+            uploadPopUpBtn.onclick = () => {window.location.href = "/uploadPage"};
+
+            topPageElement.appendChild(log_out_btn);
+            topPageElement.appendChild(uploadPopUpBtn);
+        }
+    })
+};
+
 const OnLoadPage = () => {
-    let a = document.cookie
-    .split("; ")
-    .find((row) => row.startsWith("usr="))
-    ?.split("=")[1];
-
-    console.log(a);
-
-    if (a !== undefined){
-        let topPageElement = document.getElementById("top_page");
-        let log_in_btn = document.getElementById("logInBtn");
-
-        topPageElement.removeChild(log_in_btn);
-
-        let log_out_btn = document.createElement("button");
-        log_out_btn.id = "logOutBtn";
-        log_out_btn.textContent = "Log out";
-        log_out_btn.onclick = LogOut;
-
-        let uploadPopUpBtn = document.createElement("button");
-        uploadPopUpBtn.id = "UploadBtn";
-        uploadPopUpBtn.textContent = "Upload";
-        uploadPopUpBtn.onclick = () => {window.location.href = "/uploadPage"};
-
-        topPageElement.appendChild(log_out_btn);
-        topPageElement.appendChild(uploadPopUpBtn);
-    }
+    CheckLogin();
 
     LoadMainSongs();
 };

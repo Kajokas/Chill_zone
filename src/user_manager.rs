@@ -2,7 +2,7 @@ use std::i64;
 
 use rocket::fairing::AdHoc;
 use rocket::futures::TryStreamExt;
-use rocket::http::CookieJar;
+use rocket::http::{Cookie, CookieJar};
 use rocket::response::status::Created;
 use rocket::serde::{json::Json, Deserialize};
 use rocket_db_pools::sqlx;
@@ -31,7 +31,7 @@ struct LogIn {
 
 #[get("/logout")]
 async fn log_out(cookies: &CookieJar<'_>) -> &'static str {
-    cookies.remove("usr");
+    cookies.remove_private("usr");
     "its done"
 }
 
@@ -57,12 +57,12 @@ async fn log_in(
 
         println!("{}", id);
 
-        if cookies.get("usr").is_none() {
-            cookies.add(("usr", id));
-        } else {
-            cookies.remove("usr");
-            cookies.add(("usr", id));
-        }
+        let cookie = Cookie::build(("usr", id))
+            .path("/")
+            .http_only(true)
+            .secure(true);
+
+        cookies.add_private(cookie);
     }
 
     Ok(Json(User {
@@ -79,8 +79,6 @@ async fn sign_up(
     mut db: Connection<Db>,
     cookies: &CookieJar<'_>,
 ) -> Result<Created<Json<User>>> {
-    //println!("{0}, {1}, {2}", user.username, user.email, user.psw);
-
     let results = sqlx::query!(
         "INSERT INTO user (username, email, psw) VALUES (?, ?, ?) RETURNING id",
         user.username,
@@ -94,12 +92,12 @@ async fn sign_up(
     user.id = Some(results.first().expect("Returning results").id);
     let usr_id = user.id.map(|v| v.to_string()).unwrap_or("".to_string());
 
-    if cookies.get("usr").is_none() {
-        cookies.add(("usr", usr_id));
-    } else {
-        cookies.remove("usr");
-        cookies.add(("usr", usr_id));
-    }
+    let cookie = Cookie::build(("usr", usr_id))
+        .path("/")
+        .http_only(true)
+        .secure(true);
+
+    cookies.add_private(cookie);
 
     Ok(Created::new("/").body(user))
 }

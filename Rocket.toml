@@ -1,6 +1,11 @@
 [default]
 address = "127.0.0.1"
 port = 6969
+secret_key = "+DfIqGhZnDkKLVVt03eoMfSXuLx+Z9CdkZsO/Pq6h6I="
+
+[default.tls]
+key = "config/key.pem"
+certs = "config/cert.pem"
 
 [default.limits]
 bytes = "50MiB"

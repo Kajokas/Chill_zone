@@ -105,7 +105,9 @@ async fn upload_song<'r>(
     mut db: Connection<Db>,
     cookies: &CookieJar<'_>,
 ) -> Result<String> {
-    let usr_id = cookies.get("usr").map(|crumb| crumb.value());
+    let usr_id = cookies
+        .get_private("usr")
+        .map(|crumb| format!("{}", crumb.value()));
 
     let results = sqlx::query!(
         "INSERT INTO songs (Title, CoverArtFile, MusicFile, Artist) VALUES (?, ?, ?, ?) RETURNING id",

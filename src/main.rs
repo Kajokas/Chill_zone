@@ -3,6 +3,7 @@ use rocket::fs::FileServer;
 #[macro_use]
 extern crate rocket;
 
+pub mod authenticator;
 pub mod music_manager;
 pub mod user_manager;
 
@@ -21,4 +22,5 @@ fn rocket() -> _ {
         .mount("/img", FileServer::from("./static/Images"))
         .attach(user_manager::stage())
         .attach(music_manager::stage())
+        .attach(authenticator::stage())
 }
