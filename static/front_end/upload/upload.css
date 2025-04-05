@@ -1,79 +1,108 @@
-/* General Body Styling */
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Arial', sans-serif;
     margin: 0;
-    padding: 0;
+    padding: 80px 20px 20px;
     display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
     flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #121212;
+    color: #ffffff;
 }
 
-/* Heading Styling */
 h1 {
-    font-size: 36px;
-    color: #333;
-    margin-bottom: 20px;
-    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
     color: red;
+    text-align: center;
 }
 
-/* Container for inputs and button */
 .container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background-color: darkgray;
-    padding: 50px;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-}
-
-#music_file_input, #music_cover_input{
-    display: none;
-}
-
-.customBtn{
-    background-color: gray;
-    color: white;
-    font-size: 16px;
     width: 100%;
-    max-width: 400px;
-    padding: 12px;
-    margin: 10px 0;
-    border-radius: 5px;
-    border: 1px solid #ddd;
+    max-width: 600px;
+    background-color: #282828;
+    padding: 2.5rem; /* Increased padding */
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    display: flex; /* Added */
+    flex-direction: column; /* Added */
+    gap: 1.5rem; /* Space between elements */
 }
 
-.customBtn:hover{
-    background-color: darkgray;
-}
-
-/* Styling for the input fields */
+/* Add margin to create top/bottom space */
 #music_title {
 width: 100%;
-max-width: 400px;
-padding: 12px;
-margin: 10px 0;
-border-radius: 5px;
-border: 1px solid #ddd;
-font-size: 16px;
+padding: 1.2rem;
+border-radius: 25px;
+border: none;
+font-size: 1rem;
+background-color: #383838;
+color: white;
+margin: 0; /* Reset margin */
 }
 
-/* Styling for the upload button */
+.customBtn {
+    background-color: #4a4a4a;
+    color: white;
+    font-size: 1rem;
+    width: 100%;
+    padding: 1.2rem;
+    border-radius: 25px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
 button {
-    padding: 12px 24px;
-    background-color: #4CAF50;
+    width: 100%;
+    padding: 1.2rem;
+    background-color: red;
     color: white;
     border: none;
-    border-radius: 5px;
-    font-size: 16px;
+    border-radius: 25px;
+    font-size: 1.1rem;
+    font-weight: bold;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: all 0.3s ease;
+    margin-top: 0.5rem; /* Reduced margin */
 }
 
-/* Hover effect for the upload button */
-button:hover {
-    background-color: #45a049;
+/* Responsive fixes */
+@media (max-width: 900px) {
+    .container {
+        padding: 2rem;
+        margin: 0 1rem;
+        gap: 1.2rem;
+    }
+}
+
+@media (max-width: 600px) {
+    body {
+        padding: 100px 15px 15px;
+    }
+
+    .container {
+        padding: 1.5rem;
+        gap: 1rem;
+        border-radius: 8px;
+    }
+
+    h1 {
+        font-size: 1.75rem;
+        margin-bottom: 1.5rem;
+    }
+
+    button {
+        margin-top: 0.25rem;
+    }
+}
+
+/* Add proper input alignment */
+input, label {
+    box-sizing: border-box;
+}
+
+#music_cover_input, #music_file_input {
+display: none;
 }

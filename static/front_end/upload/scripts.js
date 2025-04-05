@@ -38,7 +38,8 @@ const UploadMusic = () => {
             if (!response.ok){
                 alert("Something went wrong!");
             } else {
-                console.log("Works");
+                console.log("Success");
+                window.location.href = `/`;
             }
         })
         .catch((error) => {

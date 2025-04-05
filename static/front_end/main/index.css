@@ -1,47 +1,133 @@
 body {
     display: flex;
-    justify-content: center;
-    height: 100vh;
-    margin: 0;
-    font-family: Arial, sans-serif;
-}
-.top_page{
-    display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 80px 20px 20px;
+    font-family: 'Arial', sans-serif;
+    background-color: #121212;
+    color: #ffffff;
+}
+
+.top_page {
+    position: fixed;
+    top: 0;
     width: 100%;
+    padding: 15px 0;
+    background-color: #000000;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    z-index: 1000;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-.songDiv{
-    background-color: white;
-    text-align: left;
+#contents {
+width: 100%;
+max-width: 1400px;
+display: grid;
+grid-template-columns: repeat(4, 1fr);
+gap: 25px;
+padding: 20px;
 }
 
-.songDiv:hover{
-    background-color: darkgray;
+.songDiv {
+    background: #282828;
+    border-radius: 8px;
+    padding: 15px;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    cursor: pointer;
+}
+
+.songDiv:hover {
+    background-color: #383838;
+    transform: translateY(-5px);
+}
+
+.songDiv img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 4px;
+    margin-bottom: 12px;
+}
+
+#titleText {
+font-size: 1.1em;
+font-weight: bold;
+margin: 8px 0;
+white-space: nowrap;
+overflow: hidden;
+text-overflow: ellipsis;
+}
+
+#artist {
+color: #b3b3b3;
+font-size: 0.9em;
+margin: 0;
+}
+
+button {
+    padding: 10px 25px;
+    border: none;
+    border-radius: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+    margin: 0 10px;
+}
+
+button:hover {
+    opacity: 0.8;
+}
+
+#logInBtn, #logOutBtn, #UploadBtn {
+margin: 0 15px;
 }
 
 #logInBtn {
-    position: absolute;
-    right: 20px;
-    color: white;
-    background-color: darkblue;
+background: purple;
+color: white;
 }
 
 #logOutBtn {
-    position: absolute;
-    right: 20px;
-    color: black;
-    background-color: red;
+background: red;
+color: white;
 }
 
 #UploadBtn {
-    position: absolute;
-    left: 20px;
-    color: black;
-    background: gray;
+background: grey;
+color: white;
 }
 
-.content {
-    text-align: center;
+
+@media (max-width: 900px) {
+    #contents {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    }
+
+    .songDiv img {
+        height: 150px;
+    }
+}
+
+@media (max-width: 600px) {
+    #contents {
+    grid-template-columns: 1fr;
+    }
+
+    .top_page h1 {
+        font-size: 1.5em;
+    }
+
+    button {
+        padding: 8px 15px;
+        font-size: 0.9em;
+    }
+
+    .songDiv img {
+        height: 200px;
+    }
 }

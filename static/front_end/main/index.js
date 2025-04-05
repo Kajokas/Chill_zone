@@ -13,7 +13,7 @@ const CheckLogin = () => {
         if(!response.ok){
             console.log("Failed to authenticate");
         } else {
-            let topPageElement = document.getElementById("top_page");
+            let topPageElement = document.getElementById("Button_Container");
             let log_in_btn = document.getElementById("logInBtn");
 
             topPageElement.removeChild(log_in_btn);

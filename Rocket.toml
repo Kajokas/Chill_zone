@@ -8,7 +8,6 @@ key = "config/key.pem"
 certs = "config/cert.pem"
 
 [default.limits]
-bytes = "50MiB"
 data-form = "50MiB"
 "file/mp3" = "50 MiB"
 
