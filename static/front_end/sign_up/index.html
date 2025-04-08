@@ -10,13 +10,14 @@
   <body>
     <div>
       <div class="top-bar">
+        <button id="homeBtn" onclick="window.history.back()">←</button>
         <h1>Sign up</h1>
       </div>
       <div class="content">
         <input id="username" placeholder="username"/>
         <input id="mail" placeholder="email"/>
         <input id="psw" type="password" placeholder="password"/>
-        <button onclick="SignUp()">Sign up</button>
+        <button id="signUpBtn" onclick="SignUp()">Sign up</button>
       </div>
     </div>
     <script src="/signupPage/sign_up.js"></script>

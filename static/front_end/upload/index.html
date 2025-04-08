@@ -8,14 +8,17 @@
     <link rel="icon" type="image/png" href="img/favicon.png">
   </head>
   <body>
-    <h1>Upload your music</h1>
+    <div id="top-bar">
+      <button id="homeBtn" onclick="window.location.href = `/`">←</button>
+      <h1>Upload your music</h1>
+    </div>
     <div class = "container">
       <input id="music_title" placeholder="Title"/>
       <label class="customBtn" id="coverLabel" for="music_cover_input">Select music cover file (JPEG):</label>
       <input id="music_cover_input" type="file" accept=".jpg" onchange="CoverHasBeenSelected()" placeholder="Upload cover image">
       <label class="customBtn" id="musicLabel" for="music_file_input">Select music file (MP3, WAV, FLAC):</label>
       <input id="music_file_input" type="file" onchange="MusicHasBeenSelected()" accept=".mp3, .wav, .flac" placeholder="Upload file"/>
-      <button onclick=UploadMusic()>Upload</button>
+      <button id="uploadBtn" onclick=UploadMusic()>Upload</button>
     </div>
     <script src="/uploadPage/scripts.js"></script>
   </body>

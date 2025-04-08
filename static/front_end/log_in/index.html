@@ -10,13 +10,14 @@
   <body>
     <div>
       <div class="top-bar">
+        <button id="homeBtn" onclick="window.location.href = `/`">←</button>
         <h1>Log in</h1>
       </div>
       <div class="content">
         <input id="login" placeholder="username/email"/>
         <input id="psw" type="password" placeholder="password"/>
         <a href="/signupPage">Don't have an account?</a>
-        <button onclick="SignUp()">Log In</button>
+        <button id="LogIn" onclick="SignUp()">Log In</button>
       </div>
     </div>
     <script src="/loginPage/log_in.js"></script>
