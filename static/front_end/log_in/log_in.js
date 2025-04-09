@@ -19,18 +19,17 @@ const SignUp = () =>{
         })
         .then ((response) => {
             if (!response.ok){
-                alert("Something went wrong!");
+                switch (response.status){
+                    default:
+                        alert("Something went wrong!");
+                        break;
+                    case 401:
+                        alert("Incorrect login or password")
+                        break;
+                }
             } else {
-                response.json().then(data => {
-                    console.log("DATA: ", data);
-                    window.location.href = '/';
-                }).catch(err => {
-                    console.error("Recieved error: ", err);
-                });
+                window.location.href = '/';
             }
-        })
-        .catch((error) => {
-            console.log("Error with fetch");
         })
     }
 };

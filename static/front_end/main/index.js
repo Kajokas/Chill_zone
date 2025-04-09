@@ -11,7 +11,15 @@ const CheckLogin = () => {
     })
     .then((response) => {
         if(!response.ok){
-            console.log("Failed to authenticate");
+            switch (response.status){
+                default:
+                    console.log("Something went wrong");
+                    break;
+                case 401:
+                    console.log("Failed to authenticate");
+                    break;
+            }
+
         } else {
             let topPageElement = document.getElementById("Button_Container");
             let log_in_btn = document.getElementById("logInBtn");
@@ -46,13 +54,11 @@ const LogOut = () => {
     })
    .then((response) => {
        if (!response.ok){
+           //don't know how we would get here but just in case
            console.log("Unable to log out?");
+        }else{
+            window.location.href = '/';
         }
-        return response.text();
-    })
-   .then((text) => {
-       console.log(text);
-       window.location.href = '/';
     })
 };
 

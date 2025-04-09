@@ -3,7 +3,7 @@ use std::path::Path;
 
 use rocket::fairing::AdHoc;
 use rocket::form::Form;
-use rocket::fs::{relative, NamedFile, TempFile};
+use rocket::fs::{relative, TempFile};
 use rocket::futures::TryStreamExt;
 use rocket::http::CookieJar;
 use rocket::post;
@@ -39,14 +39,6 @@ struct RetMusicData {
     thumbnail: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     song: Option<String>,
-}
-
-#[get("/listen?<l>")]
-async fn listen_to_song(l: i64) -> Option<NamedFile> {
-    println!("user is watching: {}", l);
-    NamedFile::open("./static/front_end/listen/index.html")
-        .await
-        .ok()
 }
 
 #[get("/song?<l>")]
@@ -147,9 +139,8 @@ async fn upload_song<'r>(
 
 pub fn stage() -> AdHoc {
     AdHoc::on_ignite("Database staged", |rocket| async {
-        rocket.attach(Db::init()).mount(
-            "/",
-            routes![upload_song, load_main_songs, listen_to_song, load_song],
-        )
+        rocket
+            .attach(Db::init())
+            .mount("/", routes![upload_song, load_main_songs, load_song])
     })
 }
