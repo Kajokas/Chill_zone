@@ -1,6 +1,16 @@
 [default]
 address = "127.0.0.1"
 port = 6969
+secret_key = "+DfIqGhZnDkKLVVt03eoMfSXuLx+Z9CdkZsO/Pq6h6I="
+
+[default.tls]
+key = "config/key.pem"
+certs = "config/cert.pem"
+
+[default.limits]
+data-form = "50MiB"
+"file/mp3" = "50 MiB"
+"file/jpeg" = "5 MiB"
 
 [default.databases.database]
 url = "Data/DATA.sqlite"

@@ -2,22 +2,24 @@
 <html lang="">
   <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ChillZone Sign Up</title>
-    <link rel="icon" type="image/png" href="/Images/favicon.png">
-    <link rel="stylesheet" href="/signup/sign_up.css">
+    <link rel="icon" type="image/png" href="img/favicon.png">
+    <link rel="stylesheet" href="/signupPage/sign_up.css">
   </head>
   <body>
     <div>
       <div class="top-bar">
+        <button id="homeBtn" onclick="window.history.back()">←</button>
         <h1>Sign up</h1>
       </div>
       <div class="content">
-        <input id="username" placeholder="username"/>
-        <input id="mail" placeholder="email"/>
-        <input id="psw" type="password" placeholder="password"/>
-        <button onclick="SignUp()">Sign up</button>
+        <input id="username" maxlength="30" placeholder="username"/>
+        <input id="mail" type="email" maxlength="30" placeholder="email"/>
+        <input id="psw" type="password" maxlength="30" placeholder="password"/>
+        <button id="signUpBtn" onclick="SignUp()">Sign up</button>
       </div>
     </div>
-    <script src="/signup/sign_up.js"></script>
+    <script src="/signupPage/sign_up.js"></script>
   </body>
 </html>

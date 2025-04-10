@@ -3,12 +3,16 @@ const SignUp = () => {
     var mail = document.getElementById("mail").value;
     var psw = document.getElementById("psw").value;
 
+    if(!document.getElementById("mail").checkValidity()){
+        alert("Must be a valid email!");
+        return;
+    }
+
     if (!name||!mail||!psw){
         alert("All fields are mandatory");
     } else {
         console.log(name + " " + mail + " " + psw);
         var User = {
-            id: 1,
             username: name,
             email: mail,
             psw: psw
@@ -23,18 +27,22 @@ const SignUp = () => {
         })
         .then((response) =>{
             if (!response.ok){
-                alert("Something went wrong!");
+                switch (response.status){
+                    default:
+                        alert("Something went wrong!");
+                        break;
+                    case 400:
+                        response.text().then(text => {
+                            alert(text);
+                        })
+                        break;
+                }
             } else {
                 response.json().then(data => {
                     console.log("DATA: ", data);
                     window.location.href = '/';
-                }).catch(err => {
-                    console.error("Recieved error: ", err);
                 });
             }
-        })
-        .catch((error) => {
-            console.log("Error with fetch");
         })
     }
 };

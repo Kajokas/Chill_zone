@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChillZone</title>
+    <link rel="stylesheet" href="listen/style.css">
+    <link rel="icon" type="image/png" href="img/favicon.png">
+  </head>
+  <body onload = "LoadSong()">
+    <div class="top">
+      <h1 id="title_text">Chill Zone</h1>
+    </div>
+    <div class="content">
+      <img id="cover" src="" width="500" height="300"></img>
+      <audio controls id="audio_source" src=""></audio>
+      <button class="play_button" id="playbtn" onclick="playBtnLogic()">▶</button>
+      <p id="song_title"></p>
+      <p id="artist"></p>
+    </div>
+  </body>
+  <script src="/listen/script.js"></script>
+</html>
