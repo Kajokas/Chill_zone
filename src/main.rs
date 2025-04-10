@@ -5,6 +5,7 @@ extern crate rocket;
 
 pub mod authenticator;
 pub mod music_manager;
+pub mod upload_song_api;
 pub mod user_manager;
 
 #[launch]
@@ -23,4 +24,5 @@ fn rocket() -> _ {
         .attach(user_manager::stage())
         .attach(music_manager::stage())
         .attach(authenticator::stage())
+        .attach(upload_song_api::stage())
 }

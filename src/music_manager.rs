@@ -1,17 +1,12 @@
 use std::i64;
-use std::path::Path;
 
 use rocket::fairing::AdHoc;
-use rocket::form::Form;
-use rocket::fs::{relative, TempFile};
-use rocket::futures::TryStreamExt;
-use rocket::http::CookieJar;
-use rocket::post;
+use rocket::http::Status;
 use rocket::serde::json::Json;
-use rocket::tokio;
 use rocket_db_pools::sqlx;
 use rocket_db_pools::{Connection, Database};
 use serde::Serialize;
+use sqlx::Error;
 
 use crate::rocket;
 
@@ -19,17 +14,7 @@ use crate::rocket;
 #[database("database")]
 struct Db(sqlx::SqlitePool);
 
-type Result<T, E = rocket::response::Debug<sqlx::Error>> = std::result::Result<T, E>;
-
-#[derive(Debug, FromForm)]
-struct Music<'r> {
-    id: Option<i64>,
-    Title: String,
-    CoverArtFile: String,
-    MusicFile: String,
-    coverFile: TempFile<'r>,
-    musicFile: TempFile<'r>,
-}
+static LOAD_SONG_LIMIT: i64 = 16;
 
 #[derive(Serialize)]
 struct RetMusicData {
@@ -41,13 +26,40 @@ struct RetMusicData {
     song: Option<String>,
 }
 
+#[derive(Responder)]
+enum SongResponse {
+    ReturnDataArray(Json<Vec<RetMusicData>>),
+    ReturnData(Json<RetMusicData>),
+    ErrorMessage(String),
+}
+
 #[get("/song?<l>")]
-async fn load_song(mut db: Connection<Db>, l: i64) -> Result<Json<RetMusicData>> {
+async fn load_song(mut db: Connection<Db>, l: i64) -> (Status, SongResponse) {
     let results = sqlx::query!("SELECT s.id as id, s.title as title, u.username as artist, s.CoverArtFile as thumbnail, s.MusicFile as music FROM user u, songs s where s.artist = u.id and s.id = ?", l)
     .fetch_one(&mut **db)
-    .await?;
+    .await;
 
-    let good_result = Some(results).expect("No such song");
+    let good_result;
+
+    match results {
+        Err(Error::RowNotFound) => {
+            eprintln!("No such song");
+            return (
+                Status::NotFound,
+                SongResponse::ErrorMessage("Song not found".to_string()),
+            );
+        }
+        Err(e) => {
+            eprintln!("Error: {}", e);
+            return (
+                Status::InternalServerError,
+                SongResponse::ErrorMessage("Something went wrong".to_string()),
+            );
+        }
+        Ok(song) => {
+            good_result = song;
+        }
+    }
 
     let data = RetMusicData {
         id: good_result.id,
@@ -57,17 +69,30 @@ async fn load_song(mut db: Connection<Db>, l: i64) -> Result<Json<RetMusicData>>
         song: Some(good_result.music),
     };
 
-    Ok(Json(data))
+    (Status::Ok, SongResponse::ReturnData(Json(data)))
 }
 
-#[get("/loadMainPageSongs")]
-async fn load_main_songs(mut db: Connection<Db>) -> Result<Json<Vec<RetMusicData>>> {
-    let results = sqlx::query!("SELECT s.id as id, s.title as title, u.username as artist, s.CoverArtFile as thumbnail FROM user u, songs s where s.artist = u.id")
-    .fetch(&mut **db)
-    .try_collect::<Vec<_>>()
-    .await?;
+#[get("/loadMainPageSongs?<f>")]
+async fn load_main_songs(mut db: Connection<Db>, mut f: i64) -> (Status, SongResponse) {
+    f = f * LOAD_SONG_LIMIT;
+    let results = sqlx::query!("SELECT s.id as id, s.title as title, u.username as artist, s.CoverArtFile as thumbnail FROM user u, songs s where s.artist = u.id AND s.id > ? LIMIT?", f, LOAD_SONG_LIMIT)
+    .fetch_all(&mut **db)
+    .await;
 
-    let good_results = Some(results).expect("No songs found");
+    let good_results;
+
+    match results {
+        Err(e) => {
+            eprintln!("Error: {}", e);
+            return (
+                Status::InternalServerError,
+                SongResponse::ErrorMessage("Something went wrong".to_string()),
+            );
+        }
+        Ok(songs) => {
+            good_results = songs;
+        }
+    }
 
     let mut song_vec = Vec::new();
 
@@ -88,59 +113,13 @@ async fn load_main_songs(mut db: Connection<Db>) -> Result<Json<Vec<RetMusicData
         song_vec.push(song_data);
     }
 
-    Ok(Json(song_vec))
-}
-
-#[post("/upload", data = "<song>")]
-async fn upload_song<'r>(
-    mut song: Form<Music<'r>>,
-    mut db: Connection<Db>,
-    cookies: &CookieJar<'_>,
-) -> Result<String> {
-    let usr_id = cookies
-        .get_private("usr")
-        .map(|crumb| format!("{}", crumb.value()));
-
-    let results = sqlx::query!(
-        "INSERT INTO songs (Title, CoverArtFile, MusicFile, Artist) VALUES (?, ?, ?, ?) RETURNING id",
-        song.Title,
-        song.CoverArtFile,
-        song.MusicFile,
-        usr_id
-    )
-    .fetch(&mut **db)
-    .try_collect::<Vec<_>>()
-    .await?;
-
-    song.id = Some(results.first().expect("Returning results").id);
-    let song_id = song.id.map(|v| v.to_string()).unwrap_or("".to_string());
-
-    let music_dir = Path::new(relative!("music"));
-
-    let cover_file_path = music_dir.join(format!("{}", song.CoverArtFile));
-    let music_file_path = music_dir.join(format!("{}", song.MusicFile));
-
-    tokio::fs::create_dir_all(music_dir).await.unwrap();
-
-    let mut cover_file = tokio::fs::File::create(cover_file_path).await.unwrap();
-    let mut cover_file_stream = song.coverFile.open().await.unwrap();
-    tokio::io::copy(&mut cover_file_stream, &mut cover_file)
-        .await
-        .unwrap();
-
-    let mut music_file = tokio::fs::File::create(music_file_path).await.unwrap();
-    let mut music_file_stream = song.musicFile.open().await.unwrap();
-    tokio::io::copy(&mut music_file_stream, &mut music_file)
-        .await
-        .unwrap();
-
-    Ok(song_id)
+    (Status::Ok, SongResponse::ReturnDataArray(Json(song_vec)))
 }
 
 pub fn stage() -> AdHoc {
     AdHoc::on_ignite("Database staged", |rocket| async {
         rocket
             .attach(Db::init())
-            .mount("/", routes![upload_song, load_main_songs, load_song])
+            .mount("/", routes![load_main_songs, load_song])
     })
 }

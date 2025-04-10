@@ -10,6 +10,7 @@ certs = "config/cert.pem"
 [default.limits]
 data-form = "50MiB"
 "file/mp3" = "50 MiB"
+"file/jpeg" = "5 MiB"
 
 [default.databases.database]
 url = "Data/DATA.sqlite"

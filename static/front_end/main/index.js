@@ -1,4 +1,5 @@
-let currentUsr = "";
+let timesLoaded = 0;
+let isOnLoadingtimeOut = false;
 
 const RedirectToLogIN = () =>{
     window.location.href = '/loginPage';
@@ -62,13 +63,8 @@ const LogOut = () => {
     })
 };
 
-const OpenUploadPopUp = () => {
-    console.log("Works");
-};
-
-
 const LoadMainSongs = () => {
-    fetch("/loadMainPageSongs", {
+    fetch(`/loadMainPageSongs?f=${timesLoaded}`, {
         method: "GET",
     })
     .then((response) => {
@@ -82,8 +78,6 @@ const LoadMainSongs = () => {
                 console.log(`${index}: ${song.artist}`);
                 AddASongDiv(song.id, song.title, song.artist, song.thumbnail);
             });
-        }).catch(err => {
-            console.error("Recieved error: ", err);
         });
     })
 };
@@ -122,3 +116,19 @@ function AddASongDiv(id, title, author, thumb){
 const ListenToSong = (songId) => {
     window.location.href =`/listen?l=${songId}`;
 };
+
+window.addEventListener('scroll', () => {
+    const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+
+    const isAtBottom = scrollTop + clientHeight >= scrollHeight - 5;
+
+    if (isAtBottom && !isOnLoadingtimeOut) {
+        timesLoaded++;
+        isOnLoadingtimeOut = true;
+        LoadMainSongs();
+
+        setTimeout(() => {
+           isOnLoadingtimeOut = false;
+        }, 3000);
+    }
+});

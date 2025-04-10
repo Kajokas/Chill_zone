@@ -16,19 +16,15 @@ const UploadMusic = () => {
     var title = document.getElementById('music_title').value;
     var MusicFile = document.getElementById('music_file_input').files[0];
     var CoverFile = document.getElementById('music_cover_input').files[0];
-    var musicFile = MusicFile.name;
-    var coverFile = CoverFile.name;
 
-    if(!title||!musicFile||!coverFile){
+    if(!title||!MusicFile||!CoverFile){
         alert("All fields are mandatory!!!");
     } else {
         var data = new FormData();
 
-        data.append('Title', title);
-        data.append('CoverArtFile', coverFile);
-        data.append('MusicFile', musicFile);
-        data.append('coverFile', CoverFile);
-        data.append('musicFile', MusicFile);
+        data.append('title', title);
+        data.append('cover_file', CoverFile);
+        data.append('music_file', MusicFile);
 
         fetch("/upload", {
             method:"POST",
@@ -36,14 +32,25 @@ const UploadMusic = () => {
         })
         .then((response) => {
             if (!response.ok){
-                alert("Something went wrong!");
+                switch(response.status){
+                    default:
+                        alert("Something went wrong!");
+                        break;
+                    case 401:
+                        alert("You must be logged in to upload")
+                        window.location.href = `/loginPage`;
+                        break;
+                    case 422:
+                        alert("Wrong formats (cover must be jpeg and audio must be MP3)");
+                        break;
+                    case 413:
+                        alert("Files are to big");
+                        break;
+                }
             } else {
                 console.log("Success");
                 window.location.href = `/`;
             }
-        })
-        .catch((error) => {
-            console.log("Error with fetch");
         })
     };
 };
