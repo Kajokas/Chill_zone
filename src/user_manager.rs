@@ -1,5 +1,9 @@
 use std::i64;
 
+use argon2::{
+    password_hash::{rand_core::OsRng, PasswordHash, PasswordHasher, PasswordVerifier, SaltString},
+    Argon2,
+};
 use rocket::fairing::AdHoc;
 use rocket::http::{Cookie, CookieJar, Status};
 use rocket::serde::{json::Json, Deserialize};
@@ -56,9 +60,8 @@ async fn log_in(
     }
 
     let results = sqlx::query!(
-        r#"SELECT id FROM USER WHERE (username = $1 OR email = $1) AND psw = $2"#,
-        login.login,
-        login.psw
+        r#"SELECT * FROM USER WHERE (username = $1 OR email = $1)"#,
+        login.login
     )
     .fetch_one(&mut **db)
     .await;
@@ -73,6 +76,15 @@ async fn log_in(
             )
         }
         Ok(user) => {
+            let parsed_hash = PasswordHash::new(&user.psw).unwrap();
+
+            if Argon2::default()
+                .verify_password(login.psw.as_bytes(), &parsed_hash)
+                .is_err()
+            {
+                return (Status::Unauthorized, "Wrong password".to_string());
+            }
+
             let usr_id = user.id.to_string();
 
             println!("User {} has logged in", usr_id);
@@ -102,11 +114,19 @@ async fn sign_up(
         );
     }
 
+    let salt = SaltString::generate(&mut OsRng);
+    let argon2 = Argon2::default();
+
+    let hashed_psw = argon2
+        .hash_password(user.psw.as_bytes(), &salt)
+        .unwrap()
+        .to_string();
+
     let results = sqlx::query!(
         "INSERT INTO user (username, email, psw) VALUES (?, ?, ?) RETURNING id",
         user.username,
         user.email,
-        user.psw
+        hashed_psw
     )
     .fetch_one(&mut **db)
     .await;
