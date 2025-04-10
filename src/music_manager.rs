@@ -44,17 +44,11 @@ async fn load_song(mut db: Connection<Db>, l: i64) -> (Status, SongResponse) {
     match results {
         Err(Error::RowNotFound) => {
             eprintln!("No such song");
-            return (
-                Status::NotFound,
-                SongResponse::ErrorMessage("Song not found".to_string()),
-            );
+            return (Status::NotFound, SongResponse::ErrorMessage("Song not found".to_string()));
         }
         Err(e) => {
             eprintln!("Error: {}", e);
-            return (
-                Status::InternalServerError,
-                SongResponse::ErrorMessage("Something went wrong".to_string()),
-            );
+            return (Status::InternalServerError, SongResponse::ErrorMessage("Something went wrong".to_string()));
         }
         Ok(song) => {
             good_result = song;
@@ -84,10 +78,7 @@ async fn load_main_songs(mut db: Connection<Db>, mut f: i64) -> (Status, SongRes
     match results {
         Err(e) => {
             eprintln!("Error: {}", e);
-            return (
-                Status::InternalServerError,
-                SongResponse::ErrorMessage("Something went wrong".to_string()),
-            );
+            return (Status::InternalServerError, SongResponse::ErrorMessage("Something went wrong".to_string()));
         }
         Ok(songs) => {
             good_results = songs;

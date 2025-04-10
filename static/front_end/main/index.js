@@ -100,6 +100,11 @@ function AddASongDiv(id, title, author, thumb){
     let titleText = document.createElement("p");
     titleText.id = "titleText";
     titleText.innerText = title;
+    if (title.length <= 30){
+        titleText.innerText = title;
+    } else {
+        titleText.innerText = title.substring(0,30) + "...";
+    }
 
     let artistName = document.createElement("p");
     artistName.id = "artist";

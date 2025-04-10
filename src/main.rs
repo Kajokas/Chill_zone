@@ -13,10 +13,7 @@ fn rocket() -> _ {
     rocket::build()
         .mount("/", FileServer::from("./static/front_end/main").rank(0))
         .mount("/loginPage", FileServer::from("./static/front_end/log_in"))
-        .mount(
-            "/signupPage",
-            FileServer::from("./static/front_end/sign_up"),
-        )
+        .mount("/signupPage",FileServer::from("./static/front_end/sign_up"))
         .mount("/uploadPage", FileServer::from("./static/front_end/upload"))
         .mount("/songsDir", FileServer::from("./music"))
         .mount("/listen", FileServer::from("./static/front_end/listen"))

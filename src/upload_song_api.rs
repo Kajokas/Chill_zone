@@ -29,20 +29,13 @@ struct Music<'r> {
 }
 
 #[post("/upload", data = "<song>")]
-async fn upload_song<'r>(
-    song: Form<Music<'r>>,
-    mut db: Connection<Db>,
-    cookies: &CookieJar<'_>,
-) -> (Status, String) {
+async fn upload_song<'r>(song: Form<Music<'r>>, mut db: Connection<Db>, cookies: &CookieJar<'_>) -> (Status, String) {
     let usr_id = cookies
         .get_private("usr")
         .map(|crumb| format!("{}", crumb.value()));
 
     if usr_id.is_none() {
-        return (
-            Status::Unauthorized,
-            "Can't upload songs if user is not logged in".to_string(),
-        );
+        return (Status::Unauthorized, "Can't upload songs if user is not logged in".to_string());
     }
 
     let (cover_file_name, audio_file_name) = save_files(&song.cover_file, &song.music_file).await;
@@ -61,23 +54,14 @@ async fn upload_song<'r>(
     match results {
         Err(Error::Database(e)) => {
             if e.is_foreign_key_violation() {
-                (
-                    Status::Unauthorized,
-                    "User is unauthorized to upload".to_string(),
-                )
+                (Status::Unauthorized, "User is unauthorized to upload".to_string())
             } else {
-                (
-                    Status::InternalServerError,
-                    "Something went wrong".to_string(),
-                )
+                (Status::InternalServerError, "Something went wrong".to_string())
             }
         }
         Err(e) => {
             eprintln!("Error: {}", e);
-            (
-                Status::InternalServerError,
-                "Something went wrong".to_string(),
-            )
+            (Status::InternalServerError, "Something went wrong".to_string())
         }
         Ok(r) => {
             let song_id = r.id;
@@ -99,15 +83,11 @@ async fn save_files<'a>(cover_file: &TempFile<'a>, audio_file: &TempFile<'a>) ->
 
     let mut cover_file_save = tokio::fs::File::create(cover_file_path).await.unwrap();
     let mut cover_file_stream = cover_file.open().await.unwrap();
-    tokio::io::copy(&mut cover_file_stream, &mut cover_file_save)
-        .await
-        .expect("Failed to copy cover data");
+    tokio::io::copy(&mut cover_file_stream, &mut cover_file_save).await.expect("Failed to copy cover data");
 
     let mut music_file_save = tokio::fs::File::create(music_file_path).await.unwrap();
     let mut music_file_stream = audio_file.open().await.unwrap();
-    tokio::io::copy(&mut music_file_stream, &mut music_file_save)
-        .await
-        .expect("Failed to copy music data");
+    tokio::io::copy(&mut music_file_stream, &mut music_file_save).await.expect("Failed to copy music data");
 
     (cover_file_name, audio_file_name)
 }
